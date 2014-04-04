@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="component" version="3.0">
+ 
+    <name>OnePage</name>
+    <creationDate>01.04.2014</creationDate>
+    <author>Anne Richter / Sara Schönherr</author>
+    <authorEmail></authorEmail>
+    <authorUrl></authorUrl>
+    <copyright>Copyright Info</copyright>
+    <license>Lizenz Info</license>
+    <version>0.0.1</version>
+    <description>Scrollen durch mehrere Seiten Inhalt</description>
+ 
+ 	<!-- weiß nicht ganz wofür das gut ist -->
+    <update>
+        <schemas>
+            <schemapath type="mysql">sql/updates/mysql</schemapath>
+        </schemas>
+    </update>
+ 
+    <files folder="site">
+        <filename>onepage.php</filename>
+        <filename>controller.php</filename>
+        <folder>models</folder>
+        <folder>views</folder>
+    </files>
+ 
+    <administration>
+        <menu>OnePage</menu>
+ 
+        <files folder="admin">
+            <folder>sql</folder>
+            <filename>onepage.php</filename>
+        </files>
+    </administration>
+ 
+</extension>
