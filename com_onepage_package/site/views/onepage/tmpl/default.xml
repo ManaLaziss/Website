@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+        <layout title="COM_ONEPAGE_ONEPAGE_VIEW_DEFAULT_TITLE">
+                <message>COM_ONEPAGE_ONEPAGE_VIEW_DEFAULT_DESC</message>
+        </layout>
+        <fields name="request">
+                <fieldset name="request">
+                        <field
+                                name="catid"
+                                type="category"
+                                extension="com_content"
+                                label="COM_ONEPAGE_ONEPAGE_FIELD_CATEGORY_LABEL"
+                                description="COM_ONEPAGE_ONEPAGE_FIELD_CATEGORY_DESC"
+                                required="true">
+                        </field>
+                </fieldset>
+        </fields>
+</metadata>

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <extension type="component" version="3.0">
  
-    <name>OnePage</name>
+    <name>COM_ONEPAGE</name>
     <creationDate>01.04.2014</creationDate>
     <author>Anne Richter / Sara Schönherr</author>
     <authorEmail></authorEmail>
     <authorUrl></authorUrl>
     <copyright>Copyright Info</copyright>
     <license>Lizenz Info</license>
-    <version>0.0.1</version>
-    <description>Scrollen durch mehrere Seiten Inhalt</description>
+    <version>0.0.2</version>
+    <description>COM_ONEPAGE_DESCRIPTION</description>
  
  	<!-- weiß nicht ganz wofür das gut ist -->
     <update>
@@ -21,15 +21,18 @@
     <files folder="site">
         <filename>onepage.php</filename>
         <filename>controller.php</filename>
+        <filename>index.html</filename>
         <folder>models</folder>
         <folder>views</folder>
+        <folder>language</folder>
     </files>
  
     <administration>
-        <menu>OnePage</menu>
+        <menu>COM_ONEPAGE_MENU</menu>
  
         <files folder="admin">
             <folder>sql</folder>
+            <folder>language</folder>
             <filename>onepage.php</filename>
         </files>
     </administration>

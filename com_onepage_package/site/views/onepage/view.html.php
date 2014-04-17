@@ -13,12 +13,18 @@ class OnePageViewOnePage extends JViewLegacy
 	protected $hallo = '';
 
 	// Die JViewLegacy::display() Methode wird überschrieben
-	public function display($tpl = null)
-	{
-		// Die Daten werden dem View zugewiesen
-		$this->hallo = 'Hallo Welt!';
-
-		// Der View wird angezeigt
-		parent::display($tpl);
-	}
+        function display($tpl = null) 
+        {
+                // Assign data to the view
+                $this->msg = $this->get('Msg');
+ 
+                // Check for errors.
+                if (count($errors = $this->get('Errors'))) 
+                {
+                        JLog::add(implode('<br />', $errors), JLog::WARNING, 'jerror');
+                        return false;
+                }
+                // Display the view
+                parent::display($tpl);
+        }
 }
