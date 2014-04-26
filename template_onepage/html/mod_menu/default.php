@@ -12,9 +12,7 @@ defined('_JEXEC') or die;
 // Note. It is important to remove spaces between elements.
 ?>
 <?php // The menu class is deprecated. Use nav instead. ?>
-
-<nav>
-<ul class="nav menu<?php echo $class_sfx;?>"<?php
+<nav class="nav menu<?php echo $class_sfx;?>"<?php
 	$tag = '';
 
 	if ($params->get('tag_id') != null)
@@ -71,7 +69,7 @@ foreach ($list as $i => &$item)
 		$class = ' class="' . trim($class) . '"';
 	}
 
-	echo '<li' . $class . '>';
+	//echo '<li' . $class . '>';
 
 	// Render the menu item.
 	switch ($item->type) :
@@ -90,18 +88,18 @@ foreach ($list as $i => &$item)
 	// The next item is deeper.
 	if ($item->deeper)
 	{
-		echo '<ul class="nav-child unstyled small">';
+		echo '<div class="nav-child unstyled small">';
 	}
 	elseif ($item->shallower)
 	{
 		// The next item is shallower.
-		echo '</li>';
-		echo str_repeat('</ul></li>', $item->level_diff);
+		//echo '</li>';
+		echo str_repeat('</div>', $item->level_diff);
 	}
 	else
 	{
 		// The next item is on the same level.
-		echo '</li>';
+		//echo '</li>';
 	}
 }
-?></ul></nav>
+?></nav>
