@@ -7,17 +7,13 @@ defined('_JEXEC') or die;
  */
 class OnePageViewOnePage extends JViewLegacy
 {
-	/**
-	 * @var string
-	 */
-	protected $hallo = '';
-
+	
 	// Die JViewLegacy::display() Methode wird überschrieben
         function display($tpl = null) 
         {
-                // Assign data to the view
-                $this->msg = $this->get('Msg');
- 
+                // Kategorien vom Komponententyp onepage vom Model anfragen
+ 				$this->categories = $this->get('Items');
+ 				
                 // Check for errors.
                 if (count($errors = $this->get('Errors'))) 
                 {
