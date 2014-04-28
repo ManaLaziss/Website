@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 
 $app = JFactory::getApplication();
 $document = JFactory::getDocument();
-$document->addScript($this->baseurl . '/templates/' . $this->template . '/js/onepage.js');
+$document->addScript($this->baseurl . '/templates/' . $this->template . '/js/onepage.js'); //javascript hinzufügen
 //Parameter des Templates laden
 $templateparams	= $app->getTemplate(true)->params;
 ?>
