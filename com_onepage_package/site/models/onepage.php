@@ -19,37 +19,39 @@ class OnePageModelOnePage extends JModelItem
          * Get Categories of Onepage MenuItems
          * @return array: MenuItem (id, catid, alias, catparent, cattitle, text, pictures, articles)
          */
-	public function getItems()
+public function getItems()
 	{
-		//TODO: Reihenfolge der Links überprüfen/ aktuelles Menü herausfinden, für den Fall dass man den Typ in anderen Menüs verwenden will
+		//TODO: Reihenfolge der Links Ã¼berprÃ¼fen/ aktuelles MenÃ¼ herausfinden, fÃ¼r den Fall dass man den Typ in anderen MenÃ¼s verwenden will
 		//var mitems: Menu Items Parameter
 		//var content_cats: Article Kategorien
-		$mitems = JApplicationSite::getMenu()->getItems("menutype", "scrollmenu"); 
+		$app = JFactory::getApplication();
+		$menutype = $app->getMenu()->getActive()->menutype; //holt sich aktuelles Menü
+		$mitems = $app->getMenu()->getItems("menutype", $menutype); 
 		$content_cats = JCategories::getInstance('Content');
 		
 		
 		//hier werden die Parameter der Menu Items in ein Arraygeladen
 		$i = 0;
 		foreach($mitems as $args) {
-			//Prüft ob das Objekt auch vom MenuItemTyp "Onepage" ist, sonst würde Anzeige scheitern
+			//PrÃ¼ft ob das Objekt auch vom MenuItemTyp "Onepage" ist, sonst wÃ¼rde Anzeige scheitern
 			if ($args->component == "com_onepage") {
-				//läd Menu item ID, Kategorie-ID, Link-Alias, Kategorie-Parent, Kategorie-Titel, Kategorie-Text, Artikel( Array )
+				//lÃ¤d Menu item ID, Kategorie-ID, Link-Alias, Kategorie-Parent, Kategorie-Titel, Kategorie-Text, Artikel( Array )
 				$items[$i] = new stdClass(); //Standartobjekt
 				$items[$i]->id = $args->id;
 				$items[$i]->catid = $args->query["catid"];
-				$items[$i]->alias = $args->alias; //fürs scrollen TODO: Vielleicht eher kategoriealias anstatt linkalias
+				$items[$i]->alias = $args->alias; //fÃ¼rs scrollen TODO: Vielleicht eher kategoriealias anstatt linkalias
 				$items[$i]->catparent = "root";
 				$items[$i]->cattitle = $content_cats->get($items[$i]->catid)->title;
 				$items[$i]->text = $content_cats->get($items[$i]->catid)->description;
-				//TODO: $items[$i]->pictures = ;
+				$this->splitContent($items[$i]);
 				
 				$i++;
 			}
 		}
 		
-		//hier werden Unterkategorien an das Array mit den Menu"Link" Kategorien angehängt
+		//hier werden Unterkategorien an das Array mit den Menu"Link" Kategorien angehÃ¤ngt
 		$i = 0;
-		while(count($items)>$i) { //die Schleife berücksichtigt auch neue Elemente (Unter-Unterkat.)
+		while(count($items)>$i) { //die Schleife berÃ¼cksichtigt auch neue Elemente (Unter-Unterkat.)
 			$cat = $content_cats->get($items[$i]->catid); //Lade CategoryNode Objekt
 			if($cat->hasChildren()) {
 				foreach ($cat->getChildren() as $child) {
@@ -61,12 +63,12 @@ class OnePageModelOnePage extends JModelItem
 					$items[count($items)-1]->catparent = $child->parent_id;
 					$items[count($items)-1]->cattitle = $child->title;
 					$items[count($items)-1]->text = $child->description;
-					/*//TODO: $items[$i]->pictures = ;*/
+					$this->splitContent($items[count($items)-1]);
 					
 				}
 			}
 			
-			//Hier werden sämtliche Artikel geladen
+			//Hier werden sÃ¤mtliche Artikel geladen
 			$articles = $this->getArticles($items[$i]->catid);
 			$j=0;
 			//hole wichtige Parameter der Artikel
@@ -77,7 +79,7 @@ class OnePageModelOnePage extends JModelItem
 				$tmp->title = $art->title;
 				$tmp->alias = $art->alias;
 				$tmp->text = $art->introtext;
-				//TODO: $tmp->pictures = 
+				$this->splitContent($tmp);
 				
 				$items[$i]->articles[$j] = $tmp; 
 				$j++;
@@ -91,8 +93,13 @@ class OnePageModelOnePage extends JModelItem
 		}
 		return $items;
 	}
-        
-        
+	
+	//DEBUG
+	public function getMItems()
+	{
+		return JApplicationSite::getMenu()->getItems("menutype", "scrollmenu");
+	}
+	
 	/**
 	 * Get Articles of an Category
 	 * @return array : parameters of all articles
@@ -113,5 +120,24 @@ class OnePageModelOnePage extends JModelItem
             echo $e->getMessage();
         }
         return $result;
+    }
+
+    /**
+     * get pictures and Text out of the content
+     * @return array : parameters of all articles
+     */
+    public function splitContent(&$item){ //call by reference
+    	
+    	$text=$item->text;
+    	$v = 0; //nur zur Fehlervermeidung
+    	//falls keine Bilder gefunden werden
+    	if ( $v = preg_match ( "#<img.*/>#" , $text , $item->images) == 0 ||  $v === false) {
+    		$item->images = null;
+    	}
+    	//Bilder entfernen
+    	$text = preg_replace ( "#<img.*/>#" , "" , $text );
+    	//der einzige Weg leere Absätze mit geschützten Leerzeichen zu entfernen
+    	$item->text = preg_replace ( "#<p>[^[:alnum:]]*\xA0</p>|<p></p>|<p>\s*</p>#" , "" , $text );
+    	return;
     }
 }
