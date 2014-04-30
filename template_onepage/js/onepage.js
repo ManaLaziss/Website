@@ -20,8 +20,9 @@ function softscroll(from, to, now) {
 		now = 0;
 	}
 	
-	var max = 40;	//maximale Scrollgeschwindigkeit
+	var max = 40;
 	var sudist = 100; //Weg in Pixel bis Beschleunigung beendet
+
 	
 	if (to-from < sudist*2) sudist = (to-from)/2; //falls scrollen kürzer als Beschleunigung
 	if ((now-from) <= sudist) {
