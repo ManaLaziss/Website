@@ -22,6 +22,19 @@ class OnePageViewOnePage extends JViewLegacy
 			$this->json_items[$i]->title = $cat->cattitle;
 			$this->json_items[$i]->alias = $cat->alias;
 			$this->json_items[$i]->text = $cat->text;
+			$j=0;
+			if ($cat->articles != null)
+			foreach($cat->articles as $child) {
+				$tmp = new stdClass();
+				$tmp->title = $child->title;
+				$tmp->alias = $child->alias;
+				$tmp->text = $child->text;
+				$this->json_items[$i]->articles[$j] = $tmp;
+				$j++;
+			}
+			//falls es keine Artikel gibt...
+			else $this->json_items[$i]->articles = null;
+			
 			$i++;
 		}
 		

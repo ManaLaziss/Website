@@ -16,8 +16,8 @@ defined('_JEXEC') or die;
 	<?php  //Ausgabe der Kategorien
 	foreach ($this->categories as $cat) { 
 	?>
-	<div id="category <?php echo $cat->alias; ?>" >
-		<div class="page">
+<div id="category <?php echo $cat->alias; ?>" >
+		<div class="page" id="<?php echo $cat->alias; ?>">
 			<h2><?php echo $cat->cattitle; ?></h2>
 			<p><?php echo $cat->images[0]; ?></p>
 		</div>
@@ -26,7 +26,7 @@ defined('_JEXEC') or die;
 		if ($cat->articles != null) {
 			foreach ($cat->articles as $art) { 
 			?>
-		<div class="page" id="article <?php echo $art->alias; ?>">
+		<div class="page" id="<?php echo $cat->alias; ?> <?php echo $art->alias; ?>">
 				<h3><?php echo $art->title; ?></h3>
 				<p><?php echo $art->images[0]; ?></p>
 		</div>
@@ -38,8 +38,9 @@ defined('_JEXEC') or die;
 </div>
 
 <div id="text">
-	<script type="text/javascript">
-	    var items = '<?php echo json_encode($this->json_items); ?>';
-	    //getText(items);
-	</script>
 </div>
+
+<script type="text/javascript">
+    var items = <?php echo json_encode($this->json_items); ?>;
+    setItems(items);
+</script>

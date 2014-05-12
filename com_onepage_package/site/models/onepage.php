@@ -10,16 +10,12 @@ jimport('joomla.application.component.modelitem');
  */
 class OnePageModelOnePage extends JModelItem
 {
-        /**
-         * @var string msg
-         */
-        protected $msg;
  
-        /**
-         * Get Categories of Onepage MenuItems
-         * @return array: MenuItem (id, catid, alias, catparent, cattitle, text, pictures, articles)
-         */
-public function getItems()
+	/**
+	 * Get the message
+	 * @return Menu Item array (id, catid, alias, catparent, cattitle, text, pictures, articles)
+	 */
+	public function getItems()
 	{
 		//TODO: Reihenfolge der Links überprüfen/ aktuelles Menü herausfinden, für den Fall dass man den Typ in anderen Menüs verwenden will
 		//var mitems: Menu Items Parameter
