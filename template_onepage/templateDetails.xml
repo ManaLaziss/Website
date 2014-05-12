@@ -9,42 +9,27 @@
 	<authorUrl></authorUrl>
 	<copyright>Richter Anne, Schönherr Sara 2014</copyright>
 	<license>GNU/GPL</license>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 	<description>TPL_ONEPAGE_DESCRIPTION</description>
 	
 	<files>
 		<folder>css</folder>
+		<folder>html</folder>
+		<folder>js</folder>
 		<filename>index.php</filename>
 		<filename>index.html</filename>
 		<filename>templateDetails.xml</filename>
 	</files>       
-
+<!-- TODO
 	<languages>
-		<language tag="en-GB">en-GB.tpl_templatename.ini</language>
-		<language tag="de-DE">de-DE.tpl_templatename.ini</language>
+		<language tag="en-GB">en-GB.onepage.ini</language>
+		<language tag="de-DE">de-DE.onepage.ini</language>
 	</languages>
-	
+	--/>
 	<positions>
 		<position>menu</position>
 		<position>text</position>
 	</positions>
-	
-	<config>
-		<fields name="params">
-			<fieldset name="advanced">
-        	<field 	name="sitetitle" 
-        			type="text" 
-        			default="" 
-        			label="TPL_ONEPAGE_FIELD_SITETITLE_LABEL" 
-        			description="TPL_ONEPAGE_FIELD_SITETITLE_DESC" 
-        			filter="string" />
-      	  	<field 	name="sitedescription" 
-       	 			type="text" default="" 
-       	 			label="TPL_ONEPAGE_FIELD_SITEDESCRIPTION_LABEL" 
-        			description="TPL_ONEPAGE_FIELD_SITEDESCRIPTION_DESC" 
-        			filter="string" />
-      		</fieldset>
-		</fields>
-	</config>
+
 	
 </extension>
