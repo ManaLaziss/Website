@@ -124,7 +124,7 @@ JFactory::getDocument()->addScriptDeclaration($script);
 				}
 				
 				//OVERRIDE by Ri: Unwichtige Eingaben werden ausgeblendet
-				if ($this->item->request['option'] == 'com_onepage') {
+				if (isset($this->item->request['option']) && $this->item->request['option'] == 'com_onepage') {
 					$this->form->setFieldAttribute('link', 'type', 'hidden');
 					$this->form->setFieldAttribute('browserNav', 'type', 'hidden');
 					$this->form->setFieldAttribute('template_style_id', 'type', 'hidden');
