@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 
 $app = JFactory::getApplication();
 $document = JFactory::getDocument();
-$document->addScript($this->baseurl . '/templates/' . $this->template . '/js/onepage.js'); //javascript hinzufügen
+$document->addScript($this->baseurl . '/templates/' . $this->template . '/js/onepage.js');
 //Parameter des Templates laden
 $templateparams	= $app->getTemplate(true)->params;
 ?>
@@ -28,7 +28,7 @@ $templateparams	= $app->getTemplate(true)->params;
 	</head>
 	<body>
 		<div id="menu"><jdoc:include type="modules" name="menu" style="xhtml" /></div>
+		<div id="start"><jdoc:include type="modules" name="start" style="xhtml" /></div>
 		<div id="scroll"><jdoc:include type="component" /></div>
-		<div id="text"><jdoc:include type="modules" name="text" style="xhtml" /></div>
 	</body>
 </html>
