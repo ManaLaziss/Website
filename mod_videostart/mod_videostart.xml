@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension version="2.5" type="module" method="upgrade">
+	<name>MOD_VIDEOSTART</name>
+	<author>Anne Richter</author>
+	<creationDate>May 13th, 2014</creationDate>
+	<copyright></copyright>
+	<license>GNU General Public License</license>
+	<authorEmail></authorEmail>
+	<authorUrl></authorUrl>
+	<version>1.0</version>
+	<description>MOD_VIDEOSTART_DESC</description>
+        
+	<files>
+		<filename>mod_videostart.xml</filename>
+		<filename module="mod_videostart">mod_videostart.php</filename>
+ 		<filename>index.html</filename>
+		<filename>helper.php</filename>
+		<folder>tmpl</folder>
+		<folder>language</folder>
+		
+	</files>
+
+
+	<config>
+        
+		<fields name="params">
+			<fieldset name="basic">
+				<field
+                    name="logo_img"
+                    type="media"
+                    preview="true"
+                    label="MOD_VIDEOSTART_LOGOIMG_LABEL"
+                    description="MOD_VIDEOSTART_LOGOIMG_DESC" />
+ 
+				<field
+                    name="vidfile"
+                    type="filelist"
+                    default=""
+					directory="videos"
+                    filter=""
+                    label="MOD_VIDEOSTART_MP4FILE_LABEL"
+                    description="MOD_VIDEOSTART_MP4FILE_DESC" >
+				</field>
+
+				<field
+                    name="prev_img"
+                    type="media"
+                    preview="true"
+                    label="MOD_VIDEOSTART_PREVIMG_LABEL"
+                    description="MOD_VIDEOSTART_PREVIMG_DESC" />
+
+			</fieldset>  
+		</fields>
+    </config>
+</extension>
