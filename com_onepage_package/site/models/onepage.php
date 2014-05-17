@@ -21,7 +21,7 @@ class OnePageModelOnePage extends JModelItem
 		//var mitems: Menu Items Parameter
 		//var content_cats: Article Kategorien
 		$app = JFactory::getApplication();
-		$menutype = $app->getMenu()->getActive()->menutype; //holt sich aktuelles Menü
+		$menutype = $app->getMenu()->getActive()->menutype; //holt sich aktuelles Menï¿½
 		$mitems = $app->getMenu()->getItems("menutype", $menutype); 
 		$content_cats = JCategories::getInstance('Content');
 		
@@ -125,14 +125,18 @@ class OnePageModelOnePage extends JModelItem
     public function splitContent(&$item){ //call by reference
     	
     	$text=$item->text;
-    	$v = 0; //nur zur Fehlervermeidung
-    	//falls keine Bilder gefunden werden
-    	if ( $v = preg_match ( "#<img.*/>#" , $text , $item->images) == 0 ||  $v === false) {
+    	$v = 0; 
+    	//---Filtert nur Links (non-greedy) 
+    	if ( $v = preg_match_all( "#src=[\'|\"](.*?)[\'|\"]#" , $text , $item->images) == 0 ||  $v === false) {
     		$item->images = null;
     	}
-    	//Bilder entfernen
+    	else {
+    		$item->images = $item->images[1]; //weil sonst array im array
+    	}
+    	
+    	//---Bilder entfernen
     	$text = preg_replace ( "#<img.*/>#" , "" , $text );
-    	//der einzige Weg leere Absätze mit geschützten Leerzeichen zu entfernen
+    	//---der einzige Weg leere Absï¿½tze mit geschï¿½tzten Leerzeichen zu entfernen
     	$item->text = preg_replace ( "#<p>[^[:alnum:]]*\xA0</p>|<p></p>|<p>\s*</p>#" , "" , $text );
     	return;
     }

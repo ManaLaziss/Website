@@ -3,18 +3,18 @@
 defined('_JEXEC') or die;
 
 /**
- * HTML View Klasse für die OnePage Komponente.
+ * HTML View Klasse fï¿½r die OnePage Komponente.
  */
 class OnePageViewOnePage extends JViewLegacy
 {
 	
-	// Die JViewLegacy::display() Methode wird überschrieben
+	// Die JViewLegacy::display() Methode wird ï¿½berschrieben
 	function display($tpl = null) 
 	{
-		//Daten aus dem Model holen
+	//Daten aus dem Model holen
 		$this->categories = $this->get('Items');
 		
-		//nur wichtige informationen für json
+		//nur wichtige informationen fï¿½r json
 		$this->json_items = array();
 		$i = 0;
 		foreach ($this->categories as $cat) {
@@ -22,19 +22,8 @@ class OnePageViewOnePage extends JViewLegacy
 			$this->json_items[$i]->title = $cat->cattitle;
 			$this->json_items[$i]->alias = $cat->alias;
 			$this->json_items[$i]->text = $cat->text;
-			$j=0;
-			if ($cat->articles != null)
-			foreach($cat->articles as $child) {
-				$tmp = new stdClass();
-				$tmp->title = $child->title;
-				$tmp->alias = $child->alias;
-				$tmp->text = $child->text;
-				$this->json_items[$i]->articles[$j] = $tmp;
-				$j++;
-			}
-			//falls es keine Artikel gibt...
-			else $this->json_items[$i]->articles = null;
-			
+			$this->json_items[$i]->images = $cat->images;
+			$this->json_items[$i]->articles = $cat->articles;
 			$i++;
 		}
 		
