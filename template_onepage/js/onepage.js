@@ -6,9 +6,6 @@ var STOP_AUTO_SCROLL = false;
 window.onscroll = function(){ 
 	DID_SCROLL = true; 
 };
-
-setInterval(function(){if (DID_SCROLL)writeText();  DID_SCROLL=false;},200);
-
 document.onmousedown = stopAutoScrolling;
 document.onmousewheel = stopAutoScrolling;
 document.onkeydown = function(event){ //scrollen auf Tastendruck
@@ -34,27 +31,33 @@ function stopAutoScrolling(){ //stopt Autoscrollen
 		CURRENTLY_SSCROLLING = false;
 	}
 }
+setInterval(scrollActivities,100);
+function scrollActivities() { //was passiert wenn gescrollt wird
+	if (DID_SCROLL) {
+		activateFlex();
+		writeText();
+	}  
+	DID_SCROLL=false;
+}
 
 function softScrollToPage(dir) {//gibt scrollwert der letzten/n�chsten elementes mit Klasse "page"
 	STOP_AUTO_SCROLL = false; //Automatisches scrollen wird initialisiert
-	var start = getScrollXY().y, end=start, tmp={pos:null, i:null};
+	var start = getScrollXY().y, 
+	end=start, 
+	tmp={pos:null, i:null};
 	var eles = document.getElementsByClassName("page");
 	for (var i=0; i<eles.length; i++) {
-		var pos = 0, par=eles[i];
-		while (par != "html" && par != null) {//finde scrollposition
-			pos += par.offsetTop;
-			par = par.offsetParent;
-		}
+		var pos = findScrollPosition(eles[i]);
 		if (dir =="next" && start<pos) {//gibt es ein n�chstes Element
 			if (tmp.pos==null || pos<tmp.pos) {//neues element ist n�her an start
 				tmp.pos = pos; //merken
-				tmp.i = i;
+				tmp.id = eles[i].id;
 			}
 		}
 		else if (dir =="prev" && start>pos) {//gibt es ein vorheriges Element
 			if (tmp.pos==null || pos>tmp.pos) {//neues element ist n�her an start
 				tmp.pos = pos; //merken
-				tmp.i = i;
+				tmp.id = eles[i].id;
 			}
 		}
 	}
@@ -137,17 +140,17 @@ function getScrollXY() {
     }
     return { x: scrOfX, y: scrOfY};
 }
-function setItems(items) { ITEMS = items; }
+
+//---------------- Text and Menu Manipulation --------------------------------------------------------//
+function setItems(items) { ITEMS = items; setUp(); }
 function writeText(){ //stellt auch current item ein
-	var scroll = getScrollXY().y, topoffset=10, tmp={pos:null, id:null};
+	var scroll = getScrollXY().y, 
+	topoffset=10, 
+	tmp={pos:null, id:null};
 	var eles = document.getElementsByClassName("page"); //holt sich divs mit inhalt
 	var no_text = true; //man liegt au�erhalb des Textbereich
 	for (var i=0; i<eles.length; i++) {
-		var pos = 0, par=eles[i];
-		while (par != "html" && par != null) {//finde scrollposition
-			pos += par.offsetTop;
-			par = par.offsetParent;
-		}
+		var pos = findScrollPosition(eles[i]);
 		if (scroll-pos >= 0) {//div-position liegt auf/�ber scrollposition
 			if (tmp.pos==null || scroll-pos<scroll-tmp.pos) {//neues element ist n�her an der scrollposition
 				tmp.pos = pos; //merken
@@ -159,7 +162,7 @@ function writeText(){ //stellt auch current item ein
 	
 	var text = " ";
 	if (!no_text && tmp.id != "") {
-		var alias = tmp.id.split(" ",2); //holt sich die kategorie- und artikel-alias aus der id
+		var alias = tmp.id.split(" ",2); //holt sich kategorie und artikel-alias aus der id
 		for (var i=0; i<ITEMS.length; i++) {
 			if (ITEMS[i].alias == alias[0]) { //sucht Kategorie
 				text = ITEMS[i].text;
@@ -176,4 +179,83 @@ function writeText(){ //stellt auch current item ein
 		}
 	}
 	document.all.text.innerHTML = text;
+}
+function activateFlex() { //ab einer bestimmten Position scrollt Menü und Textfeld mit
+	var scroll = getScrollXY().y;
+	var menu = document.getElementById("m_flex");
+	var fill = document.getElementById("fill");
+	var text = document.getElementById("text");
+	if (fill != undefined) var pos = findScrollPosition(fill);
+	else var pos = findScrollPosition(menu);
+	
+	if (menu.className == "menu" && scroll-pos > 0) {
+		//----neues Element um Menü Lücke zu füllen : TODO: Höhe IMMER an Menühöhe anpassen
+		fill = document.createElement('div');
+		fill.id = "fill";
+		fill.style.height = menu.offsetHeight+"px";
+		fill.style.width = "100%";
+		menu.parentNode.insertBefore(fill, menu);
+		//----Menü abtrennen
+		menu.className += " flex";
+		//----Textbox einblenden
+	}
+	else if (menu.className != "menu" && scroll-pos <= 0) {
+		menu.className = menu.className.split(" ",1); //nimmt nur den ersten klassennamen
+		menu.previousSibling.parentNode.removeChild(document.getElementById("fill"));
+		//----Textbox ausblenden
+	}
+	
+	
+}
+//--------------------BILDER-------------------------------------------------------------
+var MULTIPLE_IMAGES = new Array();; //[][0] = id des divs [][i] = script für Bild
+function setUp(){
+	//---merke Artikel mit mehr Bildern
+	if (ITEMS!=null) {
+		for (var i=0; i<ITEMS.length; i++) {
+			var cnt = 0;
+			if (ITEMS[i].images != null && lITEMS[i].images.length > 1) { //für Kategorie-inhalt
+				MULTIPLE_IMAGES[cnt][0] = ITEMS[i].alias + "_cont";
+				for(var a=0; a<ITEMS[i].images.length; a++) {
+					MULTIPLE_IMAGES[cnt][a+1] = ITEMS[i].images[a];
+				}
+				cnt++;
+			}
+			if (ITEMS[i].articles!=null){
+				for (var j=0; j<ITEMS[i].articles.length; j++) {
+					if (ITEMS[i].articles[j].images != null && ITEMS[i].articles[j].images.length > 1) { //für Artikel
+						MULTIPLE_IMAGES[cnt] = new Array();
+						MULTIPLE_IMAGES[cnt][0] = ITEMS[i].alias + " " + ITEMS[i].articles[j].alias;
+						for(var a=0; a<ITEMS[i].articles[j].images.length; a++) {
+							MULTIPLE_IMAGES[cnt][a+1] = ITEMS[i].articles[j].images[a];
+						}
+						cnt++;
+					}
+				}
+			}
+		}
+	}
+	
+}
+setInterval(randomImage,2000);
+function randomImage() {
+	if(MULTIPLE_IMAGES == null) return "";
+	for (var i=0; i<MULTIPLE_IMAGES.length; i++) {
+		var img = document.getElementById(MULTIPLE_IMAGES[i][0]);
+		img = img.getElementsByTagName("img");
+		var num = Math.floor((Math.random()*(MULTIPLE_IMAGES[i].length-1)) + 1);
+		var pathArray = window.location.pathname.split( '/' );
+		img[0].src = pathArray[0] + "/" + pathArray[1] + "/" + MULTIPLE_IMAGES[i][num];
+	}
+	return img.src;
+}
+//--------------------/BILDER-------------------------------------------------------------
+function findScrollPosition(elem) {
+	var pos = 0, 
+	par = elem;
+	while (par != "html" && par != null) {
+		pos += par.offsetTop;
+		par = par.offsetParent;
+	}
+	return pos;
 }

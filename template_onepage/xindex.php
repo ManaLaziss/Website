@@ -26,9 +26,13 @@ $templateparams	= $app->getTemplate(true)->params;
 		<jdoc:include type="head" />
 		<link rel="stylesheet" href="<?php echo $this->baseurl ?>/templates/<?php echo $this->template ?>/css/template.css" type="text/css" />
 	</head>
+	
 	<body>
-		<div id="menu"><jdoc:include type="modules" name="menu" style="xhtml" /></div>
-		<div id="start"><jdoc:include type="modules" name="start" style="xhtml" /></div>
+		<div class="page" id="start">
+			<div class="menu" id="m_static"><jdoc:include type="modules" name="menu" style="xhtml" /></div>
+			<jdoc:include type="modules" name="start" style="xhtml" />
+		</div>
+		<div class="menu" id="m_flex"><jdoc:include type="modules" name="menu" style="xhtml" /></div>
 		<div id="scroll"><jdoc:include type="component" /></div>
 	</body>
 </html>

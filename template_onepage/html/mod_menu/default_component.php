@@ -24,10 +24,10 @@ else
 	$linktype = $item->title;
 }
 
-//OVERRIDE by Ri TODO: Alias ändern in Kategoriealias
+//OVERRIDE by Ri TODO: Alias ï¿½ndern in Kategoriealias
 if ($item->component == 'com_onepage') {
 	//print_r($item);
-	echo "<span onclick=\"softscrollTo('category " . $item->alias . "')\">" . $linktype . "</span>";
+	echo "<a href='javascript:return false;' onclick=\"softscrollTo('category " . $item->alias . "')\">" . $linktype . "</a>";
 }
 else{
 //-OVERRIDE
