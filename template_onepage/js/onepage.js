@@ -144,41 +144,47 @@ function getScrollXY() {
 //---------------- Text and Menu Manipulation --------------------------------------------------------//
 function setItems(items) { ITEMS = items; setUp(); }
 function writeText(){ //stellt auch current item ein
-	var scroll = getScrollXY().y, 
-	topoffset=10, 
-	tmp={pos:null, id:null};
+	var scroll = getScrollXY().y;
+	var tmp_id=null;
 	var eles = document.getElementsByClassName("page"); //holt sich divs mit inhalt
 	var no_text = true; //man liegt au�erhalb des Textbereich
 	for (var i=0; i<eles.length; i++) {
-		var pos = findScrollPosition(eles[i]);
-		if (scroll-pos >= 0) {//div-position liegt auf/�ber scrollposition
-			if (tmp.pos==null || scroll-pos<scroll-tmp.pos) {//neues element ist n�her an der scrollposition
-				tmp.pos = pos; //merken
-				tmp.id = eles[i].id; //id �bergeben
-				no_text = false;
-			}
-		}
-	}
-	
-	var text = " ";
-	if (!no_text && tmp.id != "") {
-		var alias = tmp.id.split(" ",2); //holt sich kategorie und artikel-alias aus der id
-		for (var i=0; i<ITEMS.length; i++) {
-			if (ITEMS[i].alias == alias[0]) { //sucht Kategorie
-				text = ITEMS[i].text;
-				if (alias[1] !== undefined) {
-					for (var j=0; j<ITEMS[i].articles.length; j++) {
-						if (ITEMS[i].articles[j].alias == alias[1]){
-							text = ITEMS[i].articles[j].text;
-							break;
+		if (elemVisible(eles[i]) > 0.3) {
+			var hl = null;
+			if (eles[i].getElementsByTagName("h2").length > 0) {hl=eles[i].getElementsByTagName("h2");}
+			else if(eles[i].getElementsByTagName("h3").length > 0) {hl=eles[i].getElementsByTagName("h3");}
+			else {}
+			if (hl != null && elemVisible(hl[0]) == 1){
+				//---text schreiben
+				var alias = eles[i].id.split(" ",2); //holt sich kategorie und artikel-alias aus der id
+				for (var i=0; i<ITEMS.length; i++) {
+					if (ITEMS[i].alias == alias[0]) { //sucht Kategorie
+						text = ITEMS[i].text;
+						if (alias[1] !== undefined) {
+							for (var j=0; j<ITEMS[i].articles.length; j++) {
+								if (ITEMS[i].articles[j].alias == alias[1]){
+									text = ITEMS[i].articles[j].text;
+									break;
+								}
+							}
 						}
+						//---schreibt Text
+						document.all.text.innerHTML = text;
+						//--- Überschrift ein und ausblenden
+						hl[0].className = "fade";
+						//---alle wieder zurücksetzen
+						
+						break;//text wurde gefunden
 					}
 				}
 				break;
 			}
+			else if(hl != null){
+				hl[0].className = "";
+			}
 		}
+		else document.all.text.innerHTML = "";
 	}
-	document.all.text.innerHTML = text;
 }
 function activateFlex() { //ab einer bestimmten Position scrollt Menü und Textfeld mit
 	var scroll = getScrollXY().y;
@@ -198,15 +204,52 @@ function activateFlex() { //ab einer bestimmten Position scrollt Menü und Textf
 		//----Menü abtrennen
 		menu.className += " flex";
 		//----Textbox einblenden
+		text.className = "flex";
 	}
 	else if (menu.className != "menu" && scroll-pos <= 0) {
 		menu.className = menu.className.split(" ",1); //nimmt nur den ersten klassennamen
 		menu.previousSibling.parentNode.removeChild(document.getElementById("fill"));
 		//----Textbox ausblenden
+		text.className = "unflex";
 	}
 	
-	
 }
+
+function elemVisible(el){ //gibt sichtbaren horizontalen anteil des Elements zurück (nicht sichtbar bei 0) 0..1
+	var winpos = getScrollXY().y;
+	var winheight = 0;
+	if (!(winheight = window.innerHeight)) document.documentElement.clientHeight; //Browserkompabilität
+	
+	var pos = findScrollPosition(el);
+	var height = el.offsetHeight;
+	
+	if (pos<(winpos+winheight) && (pos+height)>winpos) {//Element im sichtbaren Bereich
+		var from = (pos<winpos)? winpos : pos;
+		var to = (pos+height>winpos+winheight)? winpos+winheight : pos+height;
+		return ((to-from)/height); //Anteil vom element, Horizontal
+	}
+	return 0;
+}
+/*
+function getStyle(el,styleProp)
+{
+	if (el.currentStyle)
+		var y = el.currentStyle[styleProp];
+	else if (window.getComputedStyle)
+		var y = document.defaultView.getComputedStyle(el,null).getPropertyValue(styleProp);
+	return y;
+}
+function setStyle(el,styleProp, value)
+{
+	if (el.currentStyle)
+		var y = el.currentStyle.setProperty(styleProp, value);
+	else if (window.getComputedStyle)
+		var y = document.defaultView.getComputedStyle(el,null).setPropertyValue(styleProp, value);
+	return y;
+}
+*/
+
+
 //--------------------BILDER-------------------------------------------------------------
 var MULTIPLE_IMAGES = new Array();; //[][0] = id des divs [][i] = script für Bild
 function setUp(){
@@ -242,12 +285,13 @@ function randomImage() {
 	if(MULTIPLE_IMAGES == null) return "";
 	for (var i=0; i<MULTIPLE_IMAGES.length; i++) {
 		var img = document.getElementById(MULTIPLE_IMAGES[i][0]);
-		img = img.getElementsByTagName("img");
-		var num = Math.floor((Math.random()*(MULTIPLE_IMAGES[i].length-1)) + 1);
-		var pathArray = window.location.pathname.split( '/' );
-		img[0].src = pathArray[0] + "/" + pathArray[1] + "/" + MULTIPLE_IMAGES[i][num];
+		if (elemVisible(img) == 0) {
+			img = img.getElementsByTagName("img");
+			var num = Math.floor((Math.random()*(MULTIPLE_IMAGES[i].length-1)) + 1);
+			var pathArray = window.location.pathname.split( '/' );
+			img[0].src = pathArray[0] + "/" + pathArray[1] + "/" + MULTIPLE_IMAGES[i][num];
+		}
 	}
-	return img.src;
 }
 //--------------------/BILDER-------------------------------------------------------------
 function findScrollPosition(elem) {
@@ -259,3 +303,4 @@ function findScrollPosition(elem) {
 	}
 	return pos;
 }
+	//.getBoundingClientRect().top 
