@@ -290,6 +290,34 @@ function randomImage() {
 			var num = Math.floor((Math.random()*(MULTIPLE_IMAGES[i].length-1)) + 1);
 			var pathArray = window.location.pathname.split( '/' );
 			img[0].src = pathArray[0] + "/" + pathArray[1] + "/" + MULTIPLE_IMAGES[i][num];
+			fitPictures();
+		}
+	}
+}
+
+
+
+
+window.onresize = fitPictures;
+window.onload = fitPictures;
+//setInterval(fitPictures,2000);
+function fitPictures() {
+	var img = document.getElementsByClassName("artimg");
+	var w = window.innerWidth;
+    var h = window.innerHeight;
+
+	if (h > w){		
+		for (var i = 0; i < img.length; i++) {	
+			var fact = (h / img[i].height) * 1.0;
+			img[i].width = img[i].width * fact;
+			img[i].height = h;
+		}
+	}
+	else {	
+		for (var i = 0; i < img.length; i++) {	
+			var fact = (w / img[i].width) * 1.0;
+			img[i].height = img[i].height * fact;
+			img[i].width = w;			
 		}
 	}
 }
