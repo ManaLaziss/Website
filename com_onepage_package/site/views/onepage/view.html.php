@@ -11,8 +11,10 @@ class OnePageViewOnePage extends JViewLegacy
 	// Die JViewLegacy::display() Methode wird �berschrieben
 	function display($tpl = null) 
 	{
-	//Daten aus dem Model holen
+		//Daten aus dem Model holen
 		$this->categories = $this->get('Items');
+		//Um sich die kategorie für das subtemplate zu merken
+		$this->curcat = null;
 		
 		//nur wichtige informationen f�r json
 		$this->json_items = array();
