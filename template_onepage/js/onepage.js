@@ -161,12 +161,12 @@ function writeText(){ //stellt auch current item ein
 				
 				//----------------------Inhalt für Mitarbeiter Seite -----------------------
 				if (eles[j].parentNode.className == "category staff"){
-					//text+= "<div id"
+					text+= "<div class=\"scollable\">"
 					for (var i=0; i<MULTIPLE_IMAGES.length; i++) {
 						if(MULTIPLE_IMAGES[i][0].split(" ",2)[0] == alias[0]) { //BIlder zur Kategorie
 							text += "<div class=\"staffinfo\">" +
 									"<div class=\"thumb\" id=\"" + alias[1] + "\">" +
-									"<img src=\"" + MULTIPLE_IMAGES[i][1] + "\" onclick=\"changeStaff('" + MULTIPLE_IMAGES[i][0]+ "')\"/></div>"; //das erste Bild ist fürs thumbnail
+									"<img src=\"" + MULTIPLE_IMAGES[i][1].src + "\" onclick=\"changeStaff('" + MULTIPLE_IMAGES[i][0]+ "')\"/></div>"; //das erste Bild ist fürs thumbnail
 							//--- Text zum Bild suchen
 							for (var h=0; h<ITEMS.length; h++){ 
 								if (ITEMS[h].alias == alias[0]) {
@@ -180,6 +180,7 @@ function writeText(){ //stellt auch current item ein
 							}
 						}
 					}
+					text += "</div>";
 				}
 				//----------------------Inhalt für normale Seite -----------------------
 				else {
@@ -285,7 +286,9 @@ function setUp(){//verarbeitet Daten und speichert sie für spätere schnellere 
 			if (ITEMS[i].images != null && lITEMS[i].images.length > 1) { //für Kategorie-inhalt
 				MULTIPLE_IMAGES[cnt][0] = ITEMS[i].alias + "_cont";
 				for(var a=0; a<ITEMS[i].images.length; a++) {
-					MULTIPLE_IMAGES[cnt][a+1] = ITEMS[i].images[a];
+					var image = new Image();
+					image.src = ITEMS[i].images[a];
+					MULTIPLE_IMAGES[cnt][a+1] = image;
 				}
 				cnt++;
 			}
@@ -295,7 +298,9 @@ function setUp(){//verarbeitet Daten und speichert sie für spätere schnellere 
 						MULTIPLE_IMAGES[cnt] = new Array();
 						MULTIPLE_IMAGES[cnt][0] = ITEMS[i].alias + " " + ITEMS[i].articles[j].alias;
 						for(var a=0; a<ITEMS[i].articles[j].images.length; a++) {
-							MULTIPLE_IMAGES[cnt][a+1] = ITEMS[i].articles[j].images[a];
+							var image = new Image();
+							image.src = ITEMS[i].articles[j].images[a];
+							MULTIPLE_IMAGES[cnt][a+1] = image;
 						}
 						cnt++;
 					}
@@ -319,9 +324,8 @@ function randomImage() {
 		if (img != null && elemVisible(img) == 0) { 
 			img = img.getElementsByTagName("img");
 			var num = Math.floor((Math.random()*(MULTIPLE_IMAGES[i].length-1)) + 1);
-			var pathArray = window.location.pathname.split( '/' );
-			img[0].src = pathArray[0] + "/" + pathArray[1] + "/" + MULTIPLE_IMAGES[i][num];
-			fitPictures();
+			img[0].src = MULTIPLE_IMAGES[i][num].src;
+			img[0].onload = fitPicture(img[0]);
 		}
 	}
 }
@@ -335,6 +339,7 @@ function changeStaff(id){
 				if (ITEMS[i].articles[j].alias == alias[1]) {
 					div.getElementsByTagName("h3")[0].innerHTML = ITEMS[i].articles[j].title;
 					div.getElementsByTagName("img")[0].src = ITEMS[i].articles[j].images[1];
+					div.getElementsByTagName("img")[0].onload = fitPicture(div.getElementsByTagName("img")[0]);
 					return;
 				}
 			}
@@ -346,47 +351,34 @@ function changeStaff(id){
 window.onresize = fitPictures;
 window.onload = fitPictures;
 //setInterval(fitPictures,2000);
-function fitPictures() {
+function fitPictures() { 
 	var img = document.getElementsByClassName("artimg");
+	for (var i = 0; i < img.length; i++) {	
+		fitPicture(img[i]);
+	}
+}
+function fitPicture(img) {
 	var w = window.innerWidth;
     var h = window.innerHeight;
 
-	if (h > w){		
-		for (var i = 0; i < img.length; i++) {	
-			var fact = (h / img[i].height) * 1.0;
-			img[i].width = img[i].width * fact;
-			img[i].height = h;
-		}
+	var imgprop = img.naturalWidth/img.naturalHeight;
+	var winprop = w/h; //gößeres winprop ist größere Breite im Vergleich zur Höhe, <1 Höhe gßer als Breite
+	//---relative Bildhöhe ist gleich oder höher, gleiche Breite an
+	if (winprop < imgprop) {
+		var fact = (h / img.naturalHeight) * 1.0;
+		img.width = img.naturalWidth * fact;
+		img.height = h;
 	}
-	else {	
-		for (var i = 0; i < img.length; i++) {	
-			var fact = (w / img[i].width) * 1.0;
-			img[i].height = img[i].height * fact;
-			img[i].width = w;			
-		}
+	//---relative Bildhöhe ist kleiner, gleiche Höhe an
+	else {
+		var fact = (w / img.naturalWidth) * 1.0;
+		img.height = img.naturalHeight * fact;
+		img.width = w;	
 	}
+	
+
 }
 
-/*function loadStaffImg(){
-	if(MULTIPLE_IMAGES == null) return;
-	var imgsrc = null;
-	var textcont = "";
-	var img = null;
-	for (var i=0; i<MULTIPLE_IMAGES.length; i++) {
-		var id = MULTIPLE_IMAGES[i][0].split(" ",2); //Kategorie Alias und Artikel Alias
-		var div = document.getElementById(id[0] +" _cont");
-		if (div != null && div.parentNode.className == "category staff") { //Mitarbeiter Bilder finden
-		
-			if (imgsrc == null) { 
-				img = div.getElementsByTagName("img");
-				var pathArray = window.location.pathname.split( '/' );
-				imgsrc = pathArray[0] + "/" + pathArray[1] + "/" + MULTIPLE_IMAGES[i][2]; //zweites Bild ist Hintergrund
-			}
-		}
-	}
-	img[0].src = imgsrc; //setzt HG
-	document.all.text.innerHTML = textcont; //setzt Text
-}*/
 
 //--------------------/BILDER-------------------------------------------------------------
 function findScrollPosition(elem) {
