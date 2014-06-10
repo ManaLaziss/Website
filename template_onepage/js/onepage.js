@@ -282,7 +282,7 @@ function setUp(){//verarbeitet Daten und speichert sie für spätere schnellere 
 	if (ITEMS!=null) {
 		var cnt = 0;
 		for (var i=0; i<ITEMS.length; i++) {
-			if (ITEMS[i].images != null && lITEMS[i].images.length > 1) { //für Kategorie-inhalt
+			if (ITEMS[i].images != null && ITEMS[i].images.length > 1) { //für Kategorie-inhalt
 				MULTIPLE_IMAGES[cnt][0] = ITEMS[i].alias + "_cont";
 				for(var a=0; a<ITEMS[i].images.length; a++) {
 					MULTIPLE_IMAGES[cnt][a+1] = ITEMS[i].images[a];
