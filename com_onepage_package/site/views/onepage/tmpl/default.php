@@ -22,8 +22,8 @@ foreach ($this->categories as $cat) {
 		</div>
 		<div id="texticons">
 			<div class="bottom">
-				<img height="10px" width="10px" id="fb"/>
-				<img height="10px" width="10px" id="gp"/>
+				<a href="https://plus.google.com/113783686460022995844/posts" target="_blank"><img src="<?php echo JURI::base() . 'images/onepage/gplus.png'; ?>" height="20px" width="20px" id="fb"/></a>
+				<a href="https://www.facebook.com/DresdnerSpitzen" target="_blank"><img src="<?php echo JURI::base() . 'images/onepage/fbook.png'; ?>" height="20px" width="20px" id="gp"/></a>
 				<a>En</a> - <a>Impressum</a>
 			</div>
 		</div>
