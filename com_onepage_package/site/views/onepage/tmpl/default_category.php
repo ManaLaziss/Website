@@ -70,7 +70,10 @@ else if (preg_match("#{show_team}#", $cat->text) == 1) { //überprüfe auf Spezi
 			
 				<div class="page" id="<?php echo $cat->alias . ' _cont' ?>">
 					<h2 class="contacts"><?php echo $cat->cattitle; ?></h2>
-					<h3 class="contacts"><?php echo $art->title; ?></h3>
+					<div class="c_info">
+						<h3 class="contacts"><?php echo $art->title; ?></h3>
+						<p id="c_text"> </p>
+					</div>
 					<img  class="artimg" src="<?php echo $art->images[1] ?>" alt=""/>
 				</div>
 		<?php	break;

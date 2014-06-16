@@ -181,7 +181,12 @@ function writeText(){ //stellt auch current item ein
 								if (ITEMS[h].alias == alias[0]) {
 									for (var g=0; g<ITEMS[h].articles.length; g++){
 										if(ITEMS[h].articles[g].alias == MULTIPLE_IMAGES[i][0].split(" ",2)[1]) { //passend zum Bild
-											text += ITEMS[h].articles[g].text + "</div>";
+											var res = ITEMS[h].articles[g].text.match(new RegExp("([^]*){([^]*)}([^]*)"));
+											if (res!=null) {
+												text += res[1] + res[3] + "</div>";
+												document.getElementById("c_text").innerHTML = res[2];
+											}
+											else text += ITEMS[h].articles[g].text + "</div>"
 											break;
 										}
 									}
@@ -190,6 +195,17 @@ function writeText(){ //stellt auch current item ein
 						}
 					}
 					text += "</div>";
+				}
+				//----------------------Inhalt für Google Maps Seite -----------------------
+				else if (eles[j].parentNode.className == "category gmap"){
+					text+= "";
+						for (var h=0; h<ITEMS.length; h++){ 
+							if (ITEMS[h].alias == alias[0] && ITEMS[h].articles!=null) {
+								for (var g=0; g<ITEMS[h].articles.length; g++){
+									//TODO: Auswerten der Artikel
+								}
+							}
+						}
 				}
 				//----------------------Inhalt für normale Seite -----------------------
 				else {
@@ -200,6 +216,10 @@ function writeText(){ //stellt auch current item ein
 								for (var h=0; h<ITEMS[i].articles.length; h++) {
 									if (ITEMS[i].articles[h].alias == alias[1]){
 										text = ITEMS[i].articles[h].text;
+										var winwidth = 0;
+										if (!(winwidth = window.innerWidth)) winwidth = document.documentElement.clientWidth; //Browserkompabilität
+										if (winwidth>1000 && text.length>300) document.all.text.className = "column";
+										else document.all.text.className = "";
 										break;
 									}
 								}
@@ -253,7 +273,7 @@ function activateFlex() { //ab einer bestimmten Position scrollt Menü und Textf
 function elemVisible(el){ //gibt sichtbaren horizontalen anteil des Elements zurück (nicht sichtbar bei 0) 0..1
 	var winpos = getScrollXY().y;
 	var winheight = 0;
-	if (!(winheight = window.innerHeight)) document.documentElement.clientHeight; //Browserkompabilität
+	if (!(winheight = window.innerHeight)) winheight = document.documentElement.clientHeight; //Browserkompabilität
 	
 	var pos = findScrollPosition(el);
 	var height = el.offsetHeight;
@@ -273,7 +293,7 @@ function setUp(){//verarbeitet Daten und speichert sie für spätere schnellere 
 	if (ITEMS!=null) {
 		var cnt = 0;
 		for (var i=0; i<ITEMS.length; i++) {
-			if (ITEMS[i].images != null && ITEMS[i].images.length > 1) { //für Kategorie-inhalt
+			if (ITEMS[i].images != null && lITEMS[i].images.length > 1) { //für Kategorie-inhalt
 				MULTIPLE_IMAGES[cnt][0] = ITEMS[i].alias + "_cont";
 				for(var a=0; a<ITEMS[i].images.length; a++) {
 					var image = new Image();
@@ -338,15 +358,51 @@ function changeStaff(id){
 	
 }
 
-window.onresize = fitPictures;
-window.onload = fitPictures;
+window.onresize = fitContent;
+window.onload = fitContent;
 //setInterval(fitPictures,2000);
-function fitPictures() { 
+
+function fitContent() { 
+	//--- Bilder anpassen
 	var img = document.getElementsByClassName("artimg");
 	for (var i = 0; i < img.length; i++) {	
 		fitPicture(img[i]);
 	}
 	fitStartpage();
+	
+	//--- Text anpassen
+	var text = "";
+	var eles = document.getElementsByClassName("page"); //holt sich divs mit inhalt
+	for (var j=0; j<eles.length; j++) {
+		var hl = null;
+		if (elemVisible(eles[j]) > 0.5) {
+			if (eles[j].getElementsByTagName("h2").length > 0) {hl=eles[j].getElementsByTagName("h2");}
+			else if(eles[j].getElementsByTagName("h3").length > 0) {hl=eles[j].getElementsByTagName("h3");}
+			if (hl != null && elemVisible(hl[0]) == 1) {
+				var alias = eles[j].id.split(" ",2); //holt sich kategorie und artikel-alias aus der id
+				
+				//----------------------Inhalt für normale Seite -----------------------
+				for (var i=0; i<ITEMS.length; i++) {
+					if (ITEMS[i].alias == alias[0]) { //sucht Kategorie
+						text = ITEMS[i].text;
+						if (alias[1] !== undefined) {
+							for (var h=0; h<ITEMS[i].articles.length; h++) {
+								if (ITEMS[i].articles[h].alias == alias[1]){
+									text = ITEMS[i].articles[h].text;
+									var winwidth = 0;
+									if (!(winwidth = window.innerWidth)) winwidth = document.documentElement.clientWidth; //Browserkompabilität
+									if (winwidth>1000 && text.length>300) document.all.text.className = "column";
+									else document.all.text.className = "";
+									break;
+								}
+							}
+						}
+						break;//text wurde gefunden
+					}
+				}
+			}
+		}
+	}
 }
 function fitPicture(img) {
 	var w = window.innerWidth;
@@ -396,11 +452,19 @@ function fitStartpage(){
     var h = window.innerHeight;
 	var start = document.getElementById("cont");
 	var menu = document.getElementById("m_static");
-	var m_margin = (getStyle("menu","margin")>getStyle("menu","margin-top")? getStyle("menu","margin"):getStyle("menu","margin-top"));
-	var s_margin = (start.style.margin>start.style.marginTop?start.style.margin:start.style.marginTop) + (start.style.margin>start.style.marginBottom?start.style.margin:start.style.marginBottom);
-	var s_padding = (start.style.padding>start.style.paddingTop?start.style.padding:start.style.paddingTop) + (start.style.padding>start.style.paddingBottom?start.style.padding:start.style.paddingBottom);
+	
+	var m_margin = parseInt(getStyle(menu,"margin-top"))+parseInt(getStyle(menu,"margin-bottom"));
+	var s_margin = parseInt(getStyle(start,"margin-top"))+parseInt(getStyle(start,"margin-bottom"));
+	var s_padding = parseInt(getStyle(start,"padding-top"))+parseInt(getStyle(start,"padding-bottom"));
+	
 	var erg = h - (menu.offsetHeight + m_margin + s_margin + s_padding);
 	start.style.height = erg + "px";
+	
+	//--- logo höhe an Video anpassen
+	var logo = document.getElementById("logo");
+	var video = document.getElementById("video");
+	video.onresize = function(){logo.style.height = video.clientHeight + "px";};
+	video.onresize();
 }
 function findScrollPosition(elem) {
 	var pos = 0, 
