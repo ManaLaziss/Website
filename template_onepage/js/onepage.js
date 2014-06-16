@@ -150,6 +150,7 @@ function getScrollXY() { //scrollposition
 
 //---------------- Text and Menu Manipulation --------------------------------------------------------//
 function setItems(items) { ITEMS = items; setUp(); /*loadStaffImg();*/}
+var jobdescrtext = new Array();
 function writeText(){ //stellt auch current item ein
 	var text = "";
 	var scroll = getScrollXY().y;
@@ -207,6 +208,22 @@ function writeText(){ //stellt auch current item ein
 							}
 						}
 				}
+				//----------------------Inhalt für Jobs Seite -----------------------
+				else if (eles[j].parentNode.className == "category jobs"){
+				text += "<div class=\"scollable\">";				
+				
+				for (var h=0; h<ITEMS.length; h++){ //alle items durchsuchen
+					if (ITEMS[h].alias == alias[0]) {//is das aktuelle item in einer Unterkategorie der sichtbaren kategorie
+						jobdescrtext = new Array(ITEMS[h].articles.length);
+						for (var g=0; g<ITEMS[h].articles.length; g++){// ueber alle artikel laufen die Unterkategorie hat
+							//text += "<div class=\"jobposinfo\">";
+							text += "<a href=\"\" onclick=\"openWinJob(" + g + ");return false;\">" + ITEMS[h].articles[g].title + "</a>";
+							jobdescrtext[g] = ITEMS[h].articles[g].title + "<br>" + ITEMS[h].articles[g].text;
+						}
+					}
+				}				
+				text += "</div>";
+				}
 				//----------------------Inhalt für normale Seite -----------------------
 				else {
 					for (var i=0; i<ITEMS.length; i++) {
@@ -241,6 +258,13 @@ function writeText(){ //stellt auch current item ein
 	}
 	document.all.text.innerHTML = text; //Text schreiben
 }
+//Funktion fuer Jobseite
+function openWinJob(artnr) {
+	var wintext = jobdescrtext[artnr] + '<br><br><a href="javascript:self.close()">Schließen</a>';
+	var myWindow = window.open("", "myWindow", "width=640, height=480");
+	myWindow.document.write(wintext);
+	myWindow.moveTo( ((window.innerWidth / 2) - 320), ((window.innerHeight / 2) - 240) );
+	}
 function activateFlex() { //ab einer bestimmten Position scrollt Menü und Textfeld mit
 	var scroll = getScrollXY().y;
 	var menu = document.getElementById("m_flex");

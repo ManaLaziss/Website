@@ -3,7 +3,13 @@
 // no direct access
 defined( '_JEXEC' ) or die( 'Restricted access' ); ?>
 
-<!-- News Anzeige -->
+<!-- Jobs Anzeige -->
 <div id="jobshint">
-<?php echo "<a href='javascript:return false;' onclick=\"softscrollTo('category " . $catalias . "')\"> Jobs </a>"; ?>
+<?php 
+	if($catalias== null)
+		echo "No Jobs";
+	else
+		echo "<a href='javascript:return false;' onclick=\"softscrollTo('category " . $catalias . "')\"> Jobs </a>"; 
+	
+?>
 </div>

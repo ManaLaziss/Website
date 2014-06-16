@@ -214,6 +214,28 @@ color: black;
 	-webkit-animation: slideOut 2s; /* Chrome, Safari, Opera */
 	animation: slideOut 2s;
 }
+/*--------------------------------------------*/
+/*HINTS*/
+
+/*NEWS*/
+#buttonnews {
+z-index: 10;
+background-color: white;
+position: fixed;
+top: 30px;
+font-size: 16px;
+font-family:"Calibri", sans-serif;
+}
+
+/*JOBS*/
+#buttonjobs {
+z-index: 10;
+background-color: white;
+position: fixed;
+top: 60px;
+font-size: 16px;
+font-family:"Calibri", sans-serif;
+}
 
 /*--------------------------------------------*/
 /*TEXTBEREICH*/

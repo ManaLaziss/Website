@@ -39,35 +39,42 @@ class modNewsHelper
 				
 		try {
             $db->setQuery($query);
-            $resultCat = $db->loadObjectList();
+            $resultCat = $db->loadAssocList();
         }
         catch(RuntimeException $e){
             echo $e->getMessage();
         }		
-				
-		//searching for the cat with the show_news code
-		while($row = mysql_fetch_assoc($resultCat)) {
-			if(preg_match("#show_news#", $row['description']) == 1){
-				$catid = $row['id'];
-				break;
-				}							
-		}	
+		
+		//searching for the cat with the show_news code	
+		$catid = null;
+		date_default_timezone_set("Europe/Berlin");
+		$date = date('Y-m-d h:i:s', strtotime("-30 days"));
+		if($resultCat != null){//has the result a failure
+			for($i=0; $i < sizeof($resultCat); $i++){
+				if(preg_match("#{show_news}#", $resultCat[$i]['description']) == 1){
+						$catid = $resultCat[$i]['id'];
+						break;
+						}							
+			}
 	
-		//+++Second, get the articles for the category which are not older than 30 days+++
-        $result = null;
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
-        $query->select('*') 
-                ->from('#__content')
-                ->where( 'catid='.$db->quote($catid) 'and created >=' .(getdate('Y-m-d h:i:s', strtotime("-30 days"))) ); 
+			//+++Second, get the articles for the category which are not older than 30 days+++
+			$result = null;
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$query->select('*') 
+					->from('#__content')
+					->where( 'catid='.$db->quote($catid) ); 
+					//->where( 'catid='.$db->quote($catid).' and created >= '.$date );
 				
-        try {
-            $db->setQuery($query);
-            $result = $db->loadObjectList();
-        }
-        catch(RuntimeException $e){
-            echo $e->getMessage();
-        }						
+					
+			try {
+				$db->setQuery($query);
+				$result = $db->loadAssocList();
+			}
+			catch(RuntimeException $e){
+				echo $e->getMessage();
+			}	
+		}else{echo "Failure in SQL: show_news didn't get the categories from the db";}					
         return $result;
     }
 }
