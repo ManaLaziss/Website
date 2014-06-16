@@ -4,7 +4,7 @@ var ITEMS = null; //Die Kategorien und deren Artikel
 var STOP_AUTO_SCROLL = false;
 
 //===SCROLLING===============================//
-//---allgemein--------------------------------
+//---allgemein-------------------------------
 window.onscroll = function(){ 
 	DID_SCROLL = true; 
 };
