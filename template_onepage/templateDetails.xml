@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE install PUBLIC "-//Joomla! 3.0//DTD template 1.0//EN"
  "http://dev.joomla.org/xml/3.0/template-install.dtd">
-<extension version="3.0" type="template">
-	<name>Onepage</name>
-	<creationDate>11-04-2014</creationDate>
+<extension version="3.0" type="template" client="site">
+	<name>onepage</name>
+	<creationDate>29-04-2014</creationDate>
 	<author>Richter Anne, Schönherr Sara</author>
 	<authorEmail></authorEmail>
 	<authorUrl></authorUrl>
-	<copyright>Richter Anne, Schönherr Sara 2014</copyright>
+	<copyright>Copyright (c) 2014 Richter Anne, Schönherr Sara</copyright>
 	<license>GNU/GPL</license>
 	<version>0.0.4</version>
-	<description>TPL_ONEPAGE_XML_DESCRIPTION</description>
+	<description>dynamic template for one page design</description>
 	
 	<files>
 		<folder>css</folder>
@@ -21,10 +21,31 @@
 		<filename>index.html</filename>
 		<filename>templateDetails.xml</filename>
 	</files>  
+	    
+	<!--<languages>
+		<language tag="en-GB">en-GB.tpl_templatename.ini</language>
+		<language tag="de-DE">de-DE.tpl_templatename.ini</language>
+	</languages>-->
 	
 	<positions>
 		<position>menu</position>
 		<position>start</position>
+		<position>news</position>
+		<position>jobs</position>
 	</positions>
+	
+	<config>
+		<fields name="params">
+			<fieldset name="advanced">
+			<!-- anzeigen? -->
+			<field name="show_jobs" type="radio"
+				default="0" label="showing_prompt"
+				description="Soll angezeigt werden, dass Jobs gesucht werden?">
+				<option value="1">Ja</option>
+				<option value="0">Nein</option>
+			</field>
+      		</fieldset>
+		</fields>
+	</config>
 	
 </extension>

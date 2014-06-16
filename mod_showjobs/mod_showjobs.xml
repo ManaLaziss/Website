@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" version="3.1.0" client="site" method="upgrade">
+    <name>Show jobs</name>
+    <author>Sara Schoenherr, Anne Richter</author>
+	<creationDate>May 28th, 2014</creationDate>
+	<copyright></copyright>
+	<license>GNU General Public License</license>
+	<authorEmail></authorEmail>
+	<authorUrl></authorUrl>
+    <version>1.0.0</version>
+    <description>A module for showing that jobs are avaiable.</description>
+    <files>
+        <filename>mod_showjobs.xml</filename>
+        <filename module="mod_showjobs">mod_showjobs.php</filename>
+        <filename>index.html</filename>
+        <filename>helper.php</filename>
+        <filename>tmpl/default.php</filename>
+        <filename>tmpl/index.html</filename>
+    </files>
+    <config>
+    </config>
+</extension>
