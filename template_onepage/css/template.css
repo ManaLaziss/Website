@@ -220,21 +220,47 @@ color: black;
 /*NEWS*/
 #buttonnews {
 z-index: 10;
-background-color: white;
+background: rgba(255,255,255,0.9);
 position: fixed;
-top: 30px;
-font-size: 16px;
+top: 50px;
+font-size: 22px;
 font-family:"Calibri", sans-serif;
+padding-top:3px;
+padding-bottom:3px;
+width: 70px;
+
+border-top-right-radius: 5px;
+moz-border-radius-topright: 5px;
+-webkit-border-top-right-radius: 5px;
+border-bottom-right-radius: 5px;
+moz-border-radius-bottomright: 5px;
+-webkit-border-bottom-right-radius: 5px;
 }
 
 /*JOBS*/
 #buttonjobs {
 z-index: 10;
-background-color: white;
+background: rgba(255,255,255,0.9);
 position: fixed;
-top: 60px;
-font-size: 16px;
+top: 90px;
+font-size: 22px;
 font-family:"Calibri", sans-serif;
+padding-top:3px;
+padding-bottom:3px;
+width: 70px;
+
+border-top-right-radius: 5px;
+moz-border-radius-topright: 5px;
+-webkit-border-top-right-radius: 5px;
+border-bottom-right-radius: 5px;
+moz-border-radius-bottomright: 5px;
+-webkit-border-bottom-right-radius: 5px;
+}
+#buttonjobs:hover{
+width: 85px;
+}
+#buttonnews:hover{
+width: 85px;
 }
 
 /*--------------------------------------------*/
@@ -328,6 +354,10 @@ column-count:2;
 #texticons a:hover{ 
 	color: #999999; /*Grauton*/
 	background: rgba(255,255,255,0.0);
+}
+/*fuer jobtextbereich*/
+.pdftitle{
+font-size: 16px;
 }
 
 /*---------------------------------------------*/

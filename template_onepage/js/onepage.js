@@ -104,7 +104,7 @@ function softscroll(from, to, now, dir) { //eigentliche automatische Scrollfunkt
 		else dir = 1; //vorwärts scrollen
 	}
 	
-	var max = 40;
+	var max = 60;
 	var sudist = 100; //Weg in Pixel bis Beschleunigung beendet
 	if (to-from < sudist*2) sudist = (to-from)/2; //falls scrollen kürzer als Beschleunigung
 	var speed = 0;
@@ -208,17 +208,33 @@ function writeText(){ //stellt auch current item ein
 							}
 						}
 				}
+				//----------------------Inhalt für Impressum Seite -----------------------
+				else if (eles[j].parentNode.className == "category impressum"){
+					text+= "";
+						for (var h=0; h<ITEMS.length; h++){ 
+							if (ITEMS[h].alias == alias[0] && ITEMS[h].articles!=null) {
+								for (var g=0; g<ITEMS[h].articles.length; g++){
+									//TODO: Auswerten der Artikel, wenn es welche gäbe
+								}
+							}
+						}
+				}
 				//----------------------Inhalt für Jobs Seite -----------------------
 				else if (eles[j].parentNode.className == "category jobs"){
-				text += "<div class=\"scollable\">";				
+				text += "<div class=\"scollable\">";	
+				var strreplace = "";
 				
 				for (var h=0; h<ITEMS.length; h++){ //alle items durchsuchen
 					if (ITEMS[h].alias == alias[0]) {//is das aktuelle item in einer Unterkategorie der sichtbaren kategorie
 						jobdescrtext = new Array(ITEMS[h].articles.length);
 						for (var g=0; g<ITEMS[h].articles.length; g++){// ueber alle artikel laufen die Unterkategorie hat
-							//text += "<div class=\"jobposinfo\">";
-							text += "<a href=\"\" onclick=\"openWinJob(" + g + ");return false;\">" + ITEMS[h].articles[g].title + "</a>";
-							jobdescrtext[g] = ITEMS[h].articles[g].title + "<br>" + ITEMS[h].articles[g].text;
+							//strreplace = (ITEMS[h].articles[g].text).replace("<p>","");
+							strreplace = ITEMS[h].articles[g].text;
+							text += "<div class=\"pdftitle\"><a target=\"_blank\" href=\"http://localhost/joomla3/pdf/" + strreplace + "\">" + ITEMS[h].articles[g].title + "</a></div>";
+							text = text.replace("<p>","");
+							text = text.replace("</p>","");
+							/*text += "<a href=\"\" onclick=\"openWinJob(" + g + ");return false;\">" + ITEMS[h].articles[g].title + "</a>";
+							jobdescrtext[g] = ITEMS[h].articles[g].title + "<br>" + ITEMS[h].articles[g].text;*/
 						}
 					}
 				}				

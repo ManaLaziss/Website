@@ -157,6 +157,26 @@ else if (preg_match("#{show_jobs}#", $cat->text) == 1) {?>
 		<?php
 	
 }
+//---------------------- Anzeige für Impressum ----------
+else if (preg_match("#{show_impressum}#", $cat->text) == 1) {?>
+
+	<div class="category impressum" id="<?php echo "category " . $cat->alias; ?>" >
+	<?php 
+	if ($cat->articles != null) {//there must be articles
+		foreach ($cat->articles as $art) { 	?>						
+				<div class="page" id="<?php echo $cat->alias . ' _cont' ?>">
+					<h2 class="impcap"><?php echo $cat->cattitle; ?></h2>
+					<div id="imptext"><?php echo $art->text; ?></div>
+				</div>
+			<?php	
+		}
+	}
+		?>
+		</div>
+		<?php
+	
+}
+
 
 
 
