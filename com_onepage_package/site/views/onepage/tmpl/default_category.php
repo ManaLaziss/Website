@@ -5,7 +5,7 @@ defined('_JEXEC') or die;
 $cat = $this->curcat; //lade momentane Kategorie
 
 if (preg_match("#{show_.*}#", $cat->text) != 1) { //überprüfe auf Spezialseite
-	//---------------------- Anzeige für normale Seite ----------
+//---------------------- Anzeige für normale Seite ----------
 	?>
 		
 		<div class="category" id="<?php echo "category " . $cat->alias; ?>" >
@@ -71,10 +71,11 @@ else if (preg_match("#{show_team}#", $cat->text) == 1) { //überprüfe auf Spezi
 				<div class="page" id="<?php echo $cat->alias . ' _cont' ?>">
 					<h2 class="contacts"><?php echo $cat->cattitle; ?></h2>
 					<div class="c_info">
-						<h3 class="contacts"><?php echo $art->title; ?></h3>
+					
+						<h3 class="contacts"><?php /* echo $art->title;*/ ?></h3>
 						<p id="c_text"> </p>
 					</div>
-					<img  class="artimg" src="<?php echo $art->images[1] ?>" alt=""/>
+					<img  class="artimg" src="<?php echo $cat->images[0] ?>" alt=""/>
 				</div>
 		<?php	break;
 			}
@@ -89,10 +90,15 @@ else if (preg_match("#{show_team}#", $cat->text) == 1) { //überprüfe auf Spezi
 else if (preg_match("#{show_map}#", $cat->text) == 1) { ?>
 				<script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
 				<script>
+					var GMinfoWindow = new google.maps.InfoWindow({
+					      maxWidth: 500
+					  });
+					var Gmap = null;
+					var GMMarker = null;
 					function initialize() {
 					  var myLatlng = new google.maps.LatLng(51.009351,13.814221);
 					  var mapOptions = {
-					    zoom: 12,
+					    zoom: 14,
 					    center: myLatlng,
 
 					    mapTypeControl: true,
@@ -116,15 +122,14 @@ else if (preg_match("#{show_map}#", $cat->text) == 1) { ?>
 
 					    scrollwheel: false,
 					  }
-					  var map = new google.maps.Map(document.getElementById('gmap'), mapOptions);
+					  Gmap = new google.maps.Map(document.getElementById('gmap'), mapOptions);
 					
-					  var marker = new google.maps.Marker({
+					  GMMarker = new google.maps.Marker({
 					      position: myLatlng,
-					      map: map,
-					      title: 'Hello World!'
+					      map: Gmap,
+					      title: 'Dresdner Spitzen'
 					  });
 				}
-					
 					google.maps.event.addDomListener(window, 'load', initialize);
     			</script> 
 			<div class="category gmap" id="<?php echo "category " . $cat->alias; ?>" >
@@ -137,7 +142,7 @@ else if (preg_match("#{show_map}#", $cat->text) == 1) { ?>
 
 //---------------------- Anzeige für Jobseite ----------
 else if (preg_match("#{show_jobs}#", $cat->text) != 1) {
-		?>
+	?>
 		<script type="text/javascript">
 			var popup = new Popup();
 			popup.autoHide = false;
@@ -171,8 +176,3 @@ else if (preg_match("#{show_jobs}#", $cat->text) != 1) {
 		<?php
 	
 	}//end of job else
-}
-
-
-
-

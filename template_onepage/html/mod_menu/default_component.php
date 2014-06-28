@@ -27,7 +27,7 @@ else
 //OVERRIDE by Ri TODO: Alias �ndern in Kategoriealias
 if ($item->component == 'com_onepage') {
 	//print_r($item);
-	echo "<a href='javascript:return false;' onclick=\"softscrollTo('category " . $item->alias . "')\">" . $linktype . "</a>";
+	echo "<a id=\"" . $item->alias . "\" href='javascript:return false;' onclick=\"softscrollTo('category " . $item->alias . "')\">" . $linktype . "</a>";
 }
 else{
 //-OVERRIDE

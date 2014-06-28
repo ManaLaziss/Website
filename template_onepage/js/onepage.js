@@ -3,16 +3,30 @@ var CURRENTLY_AUTOSCROLLING = false; //damit nicht zu viele SoftScrollEvents �
 var ITEMS = null; //Die Kategorien und deren Artikel
 var STOP_AUTO_SCROLL = false;
 
+
+window.onresize = fitContent;
+window.onload = function() {
+	fitContent;
+	setInterval(scrollActivities,100); //Aktivitäten nur alle 100ms wegen Performance
+}
+function setItems(items) { 
+	ITEMS = items;
+	
+	setUpImages(); 
+}
+
 //===SCROLLING===============================//
-//---allgemein-------------------------------
+//---allgemein--------------------------------
 window.onscroll = function(){ 
 	DID_SCROLL = true; 
 };
-setInterval(scrollActivities,100); //Aktivitäten nur alle 100ms wegen Performance
 function scrollActivities() { //was passiert wenn gescrollt wird/wurde
 	if (DID_SCROLL) { 
 		activateFlex();
-		if(!CURRENTLY_AUTOSCROLLING) writeText();//beim automatischen Scrollen nich (Performance)
+		if(!CURRENTLY_AUTOSCROLLING) {
+			writeText();//beim automatischen Scrollen nich (Performance)
+			currentLink();
+		}
 	}  
 	DID_SCROLL=false;
 }
@@ -104,7 +118,7 @@ function softscroll(from, to, now, dir) { //eigentliche automatische Scrollfunkt
 		else dir = 1; //vorwärts scrollen
 	}
 	
-	var max = 40;
+	var max = 80;
 	var sudist = 100; //Weg in Pixel bis Beschleunigung beendet
 	if (to-from < sudist*2) sudist = (to-from)/2; //falls scrollen kürzer als Beschleunigung
 	var speed = 0;
@@ -149,11 +163,11 @@ function getScrollXY() { //scrollposition
 }
 
 //---------------- Text and Menu Manipulation --------------------------------------------------------//
-function setItems(items) { ITEMS = items; setUp(); /*loadStaffImg();*/}
+var jobdescrtext = new Array();
 function writeText(){ //stellt auch current item ein
 	var text = "";
 	var scroll = getScrollXY().y;
-	var tmp_id=null;
+	var textclass = "";
 	var eles = document.getElementsByClassName("page"); //holt sich divs mit inhalt
 	var no_text = true; //man liegt au�erhalb des Textbereich
 	for (var j=0; j<eles.length; j++) {
@@ -165,16 +179,16 @@ function writeText(){ //stellt auch current item ein
 			if (hl != null && elemVisible(hl[0]) == 1) {
 				//--- Überschrift ein und ausblenden
 				hl[0].className = "fade";
-				
+				document.all.text.className = ""; //Klasse zurücksetzen
 				var alias = eles[j].id.split(" ",2); //holt sich kategorie und artikel-alias aus der id
 				
 				//----------------------Inhalt für Mitarbeiter Seite -----------------------
 				if (eles[j].parentNode.className == "category staff"){
-					text+= "<div class=\"scollable\">"
+					text+= "<div class=\"scrollable\">";
 					for (var i=0; i<MULTIPLE_IMAGES.length; i++) {
 						if(MULTIPLE_IMAGES[i][0].split(" ",2)[0] == alias[0]) { //BIlder zur Kategorie
 							text += "<div class=\"staffinfo\">" +
-									"<div class=\"thumb\" id=\"" + alias[1] + "\">" +
+									"<div class=\"thumb\" id=\"" + MULTIPLE_IMAGES[i][0].split(" ",2)[1] + "\">" +
 									"<img src=\"" + MULTIPLE_IMAGES[i][1].src + "\" onclick=\"changeStaff('" + MULTIPLE_IMAGES[i][0]+ "')\"/></div>"; //das erste Bild ist fürs thumbnail
 							//--- Text zum Bild suchen
 							for (var h=0; h<ITEMS.length; h++){ 
@@ -182,11 +196,18 @@ function writeText(){ //stellt auch current item ein
 									for (var g=0; g<ITEMS[h].articles.length; g++){
 										if(ITEMS[h].articles[g].alias == MULTIPLE_IMAGES[i][0].split(" ",2)[1]) { //passend zum Bild
 											var res = ITEMS[h].articles[g].text.match(new RegExp("([^]*){([^]*)}([^]*)"));
-											if (res!=null) {
-												text += res[1] + res[3] + "</div>";
-												document.getElementById("c_text").innerHTML = res[2];
+											if (alias[1] == ITEMS[h].articles[g].alias) {
+												eles[j].getElementsByTagName("h3")[0].innerHTML = ITEMS[h].articles[g].title;
+												eles[j].getElementsByTagName("img")[0].src = ITEMS[h].articles[g].images[1].src;
+												if (!eles[j].getElementsByTagName("img")[0].complete) eles[j].getElementsByTagName("img")[0].onload = fitPicture(eles[j].getElementsByTagName("img")[0]);
+												else fitPicture(eles[j].getElementsByTagName("img")[0]);
+												if (res!=null) document.getElementById("c_text").innerHTML = res[2];
+												else document.getElementById("c_text").innerHTML = "";
 											}
-											else text += ITEMS[h].articles[g].text + "</div>"
+											if (res!=null) text += res[1] + res[3] + "</div>";
+											else text += ITEMS[h].articles[g].text + "</div>";
+											
+											eles[j].id = alias[0] + " _cont";
 											break;
 										}
 									}
@@ -202,29 +223,66 @@ function writeText(){ //stellt auch current item ein
 						for (var h=0; h<ITEMS.length; h++){ 
 							if (ITEMS[h].alias == alias[0] && ITEMS[h].articles!=null) {
 								for (var g=0; g<ITEMS[h].articles.length; g++){
-									//TODO: Auswerten der Artikel
+									text+= "<a onclick='changeInfo(\""+ ITEMS[h].alias +"\",\""+ ITEMS[h].articles[g].alias +"\")'>" 
+										+ ITEMS[h].articles[g].title + "</a><br>";
 								}
 							}
 						}
+				}
+				//----------------------Inhalt für Impressum Seite -----------------------
+				else if (eles[j].parentNode.className == "category impressum"){
+					text+= "";
+						for (var h=0; h<ITEMS.length; h++){ 
+							if (ITEMS[h].alias == alias[0] && ITEMS[h].articles!=null) {
+								for (var g=0; g<ITEMS[h].articles.length; g++){
+									//TODO: Auswerten der Artikel, wenn es welche gäbe
+								}
+							}
+						}
+				}
+				//----------------------Inhalt für Jobs Seite -----------------------
+				else if (eles[j].parentNode.className == "category jobs"){
+				text += "<div class=\"scrollstaff\">";	
+				var strreplace = "";
+				for (var h=0; h<ITEMS.length; h++){ //alle items durchsuchen
+					if (ITEMS[h].alias == alias[0]) {//is das aktuelle item in einer Unterkategorie der sichtbaren kategorie
+						jobdescrtext = new Array(ITEMS[h].articles.length);
+						for (var g=0; g<ITEMS[h].articles.length; g++){// ueber alle artikel laufen die Unterkategorie hat
+							//strreplace = (ITEMS[h].articles[g].text).replace("<p>","");
+							strreplace = ITEMS[h].articles[g].text;
+							text += "<div class=\"pdftitle\"><a target=\"_blank\" href=\"pdf/" + strreplace + "\">" + ITEMS[h].articles[g].title + "</a></div>";
+							text = text.replace("<p>","");
+							text = text.replace("</p>","");
+							/*text += "<a href=\"\" onclick=\"openWinJob(" + g + ");return false;\">" + ITEMS[h].articles[g].title + "</a>";
+							jobdescrtext[g] = ITEMS[h].articles[g].title + "<br>" + ITEMS[h].articles[g].text;*/
+						}
+					}
+				}				
+				text += "</div>";
 				}
 				//----------------------Inhalt für normale Seite -----------------------
 				else {
 					for (var i=0; i<ITEMS.length; i++) {
 						if (ITEMS[i].alias == alias[0]) { //sucht Kategorie
-							text = ITEMS[i].text;
+							text = "<div id=\"textcont\">"+ITEMS[i].text+"</div>";
 							if (alias[1] !== undefined) {
 								for (var h=0; h<ITEMS[i].articles.length; h++) {
 									if (ITEMS[i].articles[h].alias == alias[1]){
-										text = ITEMS[i].articles[h].text;
+
+										text = "<div id=\"textcont\">"+ITEMS[i].articles[h].text+"</div>";
 										var winwidth = 0;
+										document.all.text.innerHTML = text; //Text schreiben
 										if (!(winwidth = window.innerWidth)) winwidth = document.documentElement.clientWidth; //Browserkompabilität
-										if (winwidth>1000 && text.length>300) document.all.text.className = "column";
-										else document.all.text.className = "";
+										if (winwidth>1000) {
+											if(document.all.textcont.className!="singleCol" && document.all.textcont.clientHeight>document.all.textbox.clientHeight/2) textclass = "column"; //Text in Spalten wenn er die erste Spalte füllt
+											else textclass = "singleCol";
+										}
+										if (document.all.textcont.clientHeight>document.all.textbox.clientHeight) document.all.text.className= "scrollbar";
 										break;
 									}
 								}
 							}
-							break;//text wurde gefunden
+							break;//text wurde gefunden (Kategorien sind eindeutig)
 						}
 					}
 				}
@@ -240,6 +298,8 @@ function writeText(){ //stellt auch current item ein
 		}
 	}
 	document.all.text.innerHTML = text; //Text schreiben
+	if (document.all.textcont != undefined) document.all.textcont.className = textclass; //Textklasse
+	else document.all.text.className= ""; //zurücksetzen
 }
 function activateFlex() { //ab einer bestimmten Position scrollt Menü und Textfeld mit
 	var scroll = getScrollXY().y;
@@ -267,10 +327,37 @@ function activateFlex() { //ab einer bestimmten Position scrollt Menü und Textf
 		//----Textbox ausblenden
 		text.className = "unflex";
 	}
-	
+	//--
 }
 
-function elemVisible(el){ //gibt sichtbaren horizontalen anteil des Elements zurück (nicht sichtbar bei 0) 0..1
+function currentLink(){ var vis = 0;
+	var eles = document.getElementsByClassName("page");
+	var menu = document.getElementById("m_flex").getElementsByTagName("a");
+	var found = false;
+	
+	for (var i=0; i<eles.length; i++) {
+		if ((vis = elemVisible(eles[i]))>0.5) {
+			for (var j=0; j<menu.length; j++) {
+				var classname = eles[i].id.split(" ",2)[0];
+				var parent = eles[i];
+				var menuname = menu[j].id;
+				var cnt = 0;
+				while (!(classname == menuname) && cnt != 3) {
+					var parent = parent.parentElement;
+					if (parent.id.split(" ",2)[1] != null) classname = parent.id.split(" ",2)[1];
+					cnt ++;
+				}
+				if (classname == menuname) {
+					menu[j].className = "active";
+					found = true;
+				}
+				else menu[j].className = "";
+			}
+			if (found) break;
+		}
+	}
+}
+function elemVisible(el) { //gibt sichtbaren horizontalen anteil des Elements zurück (nicht sichtbar bei 0) 0..1
 	var winpos = getScrollXY().y;
 	var winheight = 0;
 	if (!(winheight = window.innerHeight)) winheight = document.documentElement.clientHeight; //Browserkompabilität
@@ -288,31 +375,50 @@ function elemVisible(el){ //gibt sichtbaren horizontalen anteil des Elements zur
 
 //--------------------BILDER-------------------------------------------------------------
 var MULTIPLE_IMAGES = new Array();; //[][0] = id des divs [][i] = script für Bild
-function setUp(){//verarbeitet Daten und speichert sie für spätere schnellere Verarbeitung
+function setUpImages(){//verarbeitet Daten und speichert sie für spätere schnellere Verarbeitung
 	//---merke Artikel mit mehr als 1 Bild
 	if (ITEMS!=null) {
+		
 		var cnt = 0;
+		var image = null; //um die Bilder vorweg zu laden und Ladefehler zu vermeiden
 		for (var i=0; i<ITEMS.length; i++) {
-			if (ITEMS[i].images != null && lITEMS[i].images.length > 1) { //für Kategorie-inhalt
-				MULTIPLE_IMAGES[cnt][0] = ITEMS[i].alias + "_cont";
-				for(var a=0; a<ITEMS[i].images.length; a++) {
+			if (ITEMS[i].images != null ) { //für Kategorie
+				if (ITEMS[i].images.length == 1) { 
 					var image = new Image();
-					image.src = ITEMS[i].images[a];
-					MULTIPLE_IMAGES[cnt][a+1] = image;
+					image.src = ITEMS[i].images[0];
+					ITEMS[i].images[0] = image;
 				}
-				cnt++;
+				else{ //für mehrere Bilder 
+					MULTIPLE_IMAGES[cnt] = new Array();
+					MULTIPLE_IMAGES[cnt][0] = ITEMS[i].alias + "_cont"; 
+					for(var a=0; a<ITEMS[i].images.length; a++) {
+						var image = new Image();
+						image.src = ITEMS[i].images[a];
+						ITEMS[i].images[a] = image;
+						MULTIPLE_IMAGES[cnt][a+1] = image;
+					}
+					cnt++;
+				}
 			}
-			if (ITEMS[i].articles!=null){
+			if (ITEMS[i].articles!=null){ 
 				for (var j=0; j<ITEMS[i].articles.length; j++) {
-					if (ITEMS[i].articles[j].images != null && ITEMS[i].articles[j].images.length > 1) { //für Artikel
-						MULTIPLE_IMAGES[cnt] = new Array();
-						MULTIPLE_IMAGES[cnt][0] = ITEMS[i].alias + " " + ITEMS[i].articles[j].alias;
-						for(var a=0; a<ITEMS[i].articles[j].images.length; a++) {
+					if (ITEMS[i].articles[j].images != null ) { //für Artikel
+						if (ITEMS[i].articles[j].images.length == 1) {
 							var image = new Image();
-							image.src = ITEMS[i].articles[j].images[a];
-							MULTIPLE_IMAGES[cnt][a+1] = image;
+							image.src = ITEMS[i].articles[j].images[0];
+							ITEMS[i].articles[j].images[0] = image;
 						}
-						cnt++;
+						else {
+							MULTIPLE_IMAGES[cnt] = new Array();
+							MULTIPLE_IMAGES[cnt][0] = ITEMS[i].alias + " " + ITEMS[i].articles[j].alias;
+							for(var a=0; a<ITEMS[i].articles[j].images.length; a++) {
+								var image = new Image();
+								image.src = ITEMS[i].articles[j].images[a];
+								ITEMS[i].articles[j].images[a] = image;
+								MULTIPLE_IMAGES[cnt][a+1] = image;
+							}
+							cnt++;
+						}
 					}
 				}
 			}
@@ -322,7 +428,6 @@ function setUp(){//verarbeitet Daten und speichert sie für spätere schnellere 
 	document.getElementById("textlogo").getElementsByTagName("img")[0].src = document.getElementById("logo").src;
 	
 }
-
 
 setInterval(randomImage,2000);
 function randomImage() {
@@ -335,31 +440,33 @@ function randomImage() {
 			img = img.getElementsByTagName("img");
 			var num = Math.floor((Math.random()*(MULTIPLE_IMAGES[i].length-1)) + 1);
 			img[0].src = MULTIPLE_IMAGES[i][num].src;
-			img[0].onload = fitPicture(img[0]);
+			if (!img[0].complete) img[0].onload = fitPicture(img[0]);
+			else fitPicture(img[0]);
 		}
 	}
 }
 function changeStaff(id){
 	var alias = id.split(" ",2); //[0] = Kategorie [1] = Artikel
 	var div = document.getElementById(alias[0]+" _cont");
+	div.id = id;
+	writeText();
 	//--- Artikelüberschrift (Name) als Überschrift und Bild einfügen
-	for (var i=0; i<ITEMS.length; i++) {
+	/*for (var i=0; i<ITEMS.length; i++) {
 		if (ITEMS[i].alias == alias[0]) {
 			for (var j=0; j<ITEMS[i].articles.length; j++) {
 				if (ITEMS[i].articles[j].alias == alias[1]) {
 					div.getElementsByTagName("h3")[0].innerHTML = ITEMS[i].articles[j].title;
-					div.getElementsByTagName("img")[0].src = ITEMS[i].articles[j].images[1];
-					div.getElementsByTagName("img")[0].onload = fitPicture(div.getElementsByTagName("img")[0]);
+					div.getElementsByTagName("img")[0] = ITEMS[i].articles[j].images[1];
+					if (!div.getElementsByTagName("img")[0].complete) div.getElementsByTagName("img")[0].onload = fitPicture(div.getElementsByTagName("img")[0]);
+					else fitPicture(div.getElementsByTagName("img")[0]);
 					return;
 				}
 			}
 		}
-	}
+	}*/
 	
 }
 
-window.onresize = fitContent;
-window.onload = fitContent;
 //setInterval(fitPictures,2000);
 
 function fitContent() { 
@@ -371,7 +478,8 @@ function fitContent() {
 	fitStartpage();
 	
 	//--- Text anpassen
-	var text = "";
+	writeText();
+	/*var text = "";
 	var eles = document.getElementsByClassName("page"); //holt sich divs mit inhalt
 	for (var j=0; j<eles.length; j++) {
 		var hl = null;
@@ -391,8 +499,9 @@ function fitContent() {
 									text = ITEMS[i].articles[h].text;
 									var winwidth = 0;
 									if (!(winwidth = window.innerWidth)) winwidth = document.documentElement.clientWidth; //Browserkompabilität
-									if (winwidth>1000 && text.length>300) document.all.text.className = "column";
+									if (winwidth>1000 /*&& document.all.text.clientHeight>document.all.textbox.clientHeight) document.all.text.className = "column";
 									else document.all.text.className = "";
+									getTextHeight(document.all.text, 200);
 									break;
 								}
 							}
@@ -402,7 +511,13 @@ function fitContent() {
 				}
 			}
 		}
-	}
+	}*/
+}
+
+function getTextHeight(textdiv, width) {
+	helpdiv = document.createElement("div");
+	helpdiv.setAttribute('width', width + "px");
+	helpdiv.innerHTML = textdiv.innerHTML;
 }
 function fitPicture(img) {
 	var w = window.innerWidth;
@@ -477,8 +592,6 @@ function findScrollPosition(elem) {
 }
 	//.getBoundingClientRect().top 
 
-
-
 function getStyle(el,styleProp)
 {
 	if (el.currentStyle)
@@ -487,8 +600,8 @@ function getStyle(el,styleProp)
 		var y = document.defaultView.getComputedStyle(el,null).getPropertyValue(styleProp);
 	return y;
 }
-/*
-function setStyle(el,styleProp, value)
+
+/*function setStyle(el,styleProp, value)
 {
 	if (el.currentStyle)
 		var y = el.currentStyle.setProperty(styleProp, value);
@@ -497,3 +610,20 @@ function setStyle(el,styleProp, value)
 	return y;
 }
 */
+
+//--------------------Google Maps------------------------------------------------------------
+function changeInfo(alias1, alias2) {
+	var text = "";
+	for (var i=0; i<ITEMS.length; i++) {
+		if (ITEMS[i].alias==alias1){
+			for (var j=0; j<ITEMS[i].articles.length; j++) {
+				if (ITEMS[i].articles[j].alias==alias2){
+					text = ITEMS[i].articles[j].text;
+					break;
+				}
+			}
+		}
+	}
+	GMinfoWindow.setContent(text);
+	GMinfoWindow.open(Gmap, GMMarker);
+}
