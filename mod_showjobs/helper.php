@@ -17,7 +17,7 @@ class modJobsHelper
      */  
 	public static function getJobCat() {
 			
-		 $resultCat = null;
+		$resultCat = null;
 		
 		//get all categories
         $db = JFactory::getDbo();
@@ -27,19 +27,21 @@ class modJobsHelper
 				
 		try {
             $db->setQuery($query);
-            $resultCat = $db->loadObjectList();
+            $resultCat = $db->loadAssocList();
         }
         catch(RuntimeException $e){
             echo $e->getMessage();
         }		
 				
 		//searching for the cat with the show_jobs code
-		while($row = mysql_fetch_array($resultCat)) {
-			if(preg_match("#show_jobs#", $row['description']) == 1){
-				return $row['alias'];
-				break;
-				}							
-		}	    
+		if($resultCat != null){//has the result a failure
+			for($i=0; $i < sizeof($resultCat); $i++){
+				if(preg_match("#{show_jobs}#", $resultCat[$i]['description']) == 1){
+					return $resultCat[$i]['alias'];
+					break;
+				}
+			}
+		}else {echo "Failure in SQL: show_jobs didn't get the categories from the db"; return null;}	    
     }	
 }
 ?>

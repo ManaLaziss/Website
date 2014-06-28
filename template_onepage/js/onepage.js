@@ -240,17 +240,29 @@ function writeText(){ //stellt auch current item ein
 							}
 						}
 				}
+				//----------------------Inhalt für Impressum Seite -----------------------
+				else if (eles[j].parentNode.className == "category impressum"){
+					text+= "";
+						for (var h=0; h<ITEMS.length; h++){ 
+							if (ITEMS[h].alias == alias[0] && ITEMS[h].articles!=null) {
+								for (var g=0; g<ITEMS[h].articles.length; g++){
+									//TODO: Auswerten der Artikel, wenn es welche gäbe
+								}
+							}
+						}
+				}
 				//----------------------Inhalt für Jobs Seite -----------------------
 				else if (eles[j].parentNode.className == "category jobs"){
-				text += "<div class=\"scrollstaff\">";	
+				text += "<div class=\"scollable\">";	
 				var strreplace = "";
+				
 				for (var h=0; h<ITEMS.length; h++){ //alle items durchsuchen
 					if (ITEMS[h].alias == alias[0]) {//is das aktuelle item in einer Unterkategorie der sichtbaren kategorie
 						jobdescrtext = new Array(ITEMS[h].articles.length);
 						for (var g=0; g<ITEMS[h].articles.length; g++){// ueber alle artikel laufen die Unterkategorie hat
 							//strreplace = (ITEMS[h].articles[g].text).replace("<p>","");
 							strreplace = ITEMS[h].articles[g].text;
-							text += "<div class=\"pdftitle\"><a target=\"_blank\" href=\"pdf/" + strreplace + "\">" + ITEMS[h].articles[g].title + "</a></div>";
+							text += "<div class=\"pdftitle\"><a target=\"_blank\" href=\"http://localhost/joomla3/pdf/" + strreplace + "\">" + ITEMS[h].articles[g].title + "</a></div>";
 							text = text.replace("<p>","");
 							text = text.replace("</p>","");
 							/*text += "<a href=\"\" onclick=\"openWinJob(" + g + ");return false;\">" + ITEMS[h].articles[g].title + "</a>";
@@ -301,6 +313,13 @@ function writeText(){ //stellt auch current item ein
 	if (document.all.textcont != undefined) document.all.textcont.className = textclass; //Textklasse
 	else document.all.text.className= ""; //zurücksetzen
 }
+//Funktion fuer Jobseite
+function openWinJob(artnr) {
+	var wintext = jobdescrtext[artnr] + '<br><br><a href="javascript:self.close()">Schließen</a>';
+	var myWindow = window.open("", "myWindow", "width=640, height=480");
+	myWindow.document.write(wintext);
+	myWindow.moveTo( ((window.innerWidth / 2) - 320), ((window.innerHeight / 2) - 240) );
+	}
 function activateFlex() { //ab einer bestimmten Position scrollt Menü und Textfeld mit
 	var scroll = getScrollXY().y;
 	var menu = document.getElementById("m_flex");

@@ -37,10 +37,16 @@
 	<config>
 		<fields name="params">
 			<fieldset name="advanced">
-			<!-- anzeigen? -->
+			<!-- jobs anzeigen? -->
 			<field name="show_jobs" type="radio"
-				default="0" label="showing_prompt"
+				default="0" label="SHOW_JOBS"
 				description="Soll angezeigt werden, dass Jobs gesucht werden?">
+				<option value="1">Ja</option>
+				<option value="0">Nein</option>
+			</field>
+			<field name="show_news" type="radio"
+				default="0" label="SHOW_NEWS"
+				description="Soll angezeigt werden, dass News vorhanden sind?">
 				<option value="1">Ja</option>
 				<option value="0">Nein</option>
 			</field>
